@@ -4,11 +4,25 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
+import { router } from 'expo-router';
 import colors from '@/constants/colors.json';
+
+type Icon = keyof typeof MaterialIcons.glyphMap;
+
+interface Therapist {
+  id: string;
+  name: string;
+  specialty: string;
+  experience: string;
+  rating: number;
+  reviews: number;
+  available: boolean;
+  image: string;
+}
 
 const { width } = Dimensions.get('window');
 
-const therapists = [
+const therapists: Therapist[] = [
   {
     id: '1',
     name: 'Dr. Sarah Johnson',
@@ -41,10 +55,17 @@ const therapists = [
   },
 ];
 
-const TherapistListScreen = ({ navigation }) => {
+export default function TherapistListScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const renderTherapistCard = ({ item, index }) => (
+  const handleBookAppointment = (therapist: Therapist) => {
+    router.push({
+      pathname: '/book-appointment',
+      params: { therapist: JSON.stringify(therapist) }
+    });
+  };
+
+  const renderTherapistCard = ({ item, index }: { item: Therapist; index: number }) => (
     <Animated.View
       entering={FadeInDown.delay(index * 200).springify()}
       style={styles.therapistCard}
@@ -78,7 +99,7 @@ const TherapistListScreen = ({ navigation }) => {
       <View style={styles.cardActions}>
         <TouchableOpacity 
           style={styles.messageButton}
-          onPress={() => navigation.navigate('Chat', { therapist: item })}
+          onPress={() => router.push('/support-group')}
         >
           <MaterialIcons name="chat" size={20} color={colors.primary.brown} />
           <ThemedText style={styles.messageButtonText}>Message</ThemedText>
@@ -86,7 +107,7 @@ const TherapistListScreen = ({ navigation }) => {
 
         <TouchableOpacity 
           style={styles.bookButton}
-          onPress={() => navigation.navigate('BookAppointment', { therapist: item })}
+          onPress={() => handleBookAppointment(item)}
         >
           <ThemedText style={styles.bookButtonText}>Book Session</ThemedText>
         </TouchableOpacity>
@@ -100,7 +121,15 @@ const TherapistListScreen = ({ navigation }) => {
         colors={[colors.primary.darkBrown, colors.primary.brown]}
         style={styles.header}
       >
-        <ThemedText style={styles.headerTitle}>Find Your Therapist</ThemedText>
+        <View style={styles.headerTop}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <MaterialIcons name="arrow-back" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <ThemedText style={styles.headerTitle}>Find Your Therapist</ThemedText>
+        </View>
         <View style={styles.searchContainer}>
           <MaterialIcons name="search" size={24} color={colors.text.secondary} />
           <TextInput
@@ -122,7 +151,7 @@ const TherapistListScreen = ({ navigation }) => {
       />
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -135,19 +164,27 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    marginRight: 15,
+  },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
-    marginBottom: 20,
+    flex: 1,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 15,
     padding: 10,
-    marginBottom: 10,
+    paddingHorizontal: 15,
   },
   searchInput: {
     flex: 1,
@@ -162,7 +199,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 15,
-    marginBottom: 20,
+    marginBottom: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -194,13 +231,13 @@ const styles = StyleSheet.create({
   specialty: {
     fontSize: 14,
     color: colors.text.secondary,
-    marginTop: 4,
+    marginTop: 2,
   },
   availabilityBadge: {
-    backgroundColor: `${colors.services.green}15`,
+    backgroundColor: `${colors.services.green}20`,
     paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingVertical: 5,
+    borderRadius: 10,
   },
   availabilityText: {
     color: colors.services.green,
@@ -223,8 +260,6 @@ const styles = StyleSheet.create({
   cardActions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
   },
   messageButton: {
     flexDirection: 'row',
@@ -232,10 +267,10 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.primary.brown}15`,
     paddingVertical: 8,
     paddingHorizontal: 15,
-    borderRadius: 20,
+    borderRadius: 12,
   },
   messageButtonText: {
-    marginLeft: 8,
+    marginLeft: 5,
     color: colors.primary.brown,
     fontWeight: '600',
   },
@@ -243,12 +278,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary.brown,
     paddingVertical: 8,
     paddingHorizontal: 20,
-    borderRadius: 20,
+    borderRadius: 12,
   },
   bookButtonText: {
     color: '#FFFFFF',
     fontWeight: '600',
   },
 });
-
-export default TherapistListScreen;

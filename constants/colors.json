@@ -1,0 +1,29 @@
+{
+  "primary": {
+    "dark": "#2C2C2E",
+    "light": "#FFFFFF",
+    "accent": "#FF2D55",
+    "brown": "#A0522D",
+    "blue": "#007AFF",
+    "darkBrown": "#8B4513",
+    "cream": "#FFFDD0"
+  },
+  "services": {
+    "blue": "#32ADE6",
+    "green": "#4CD964",
+    "orange": "#FF9500",
+    "red": "#FF3B30",
+    "purple": "#AF52DE"
+  },
+  "background": {
+    "main": "#F2F2F7",
+    "card": "#FFFFFF",
+    "dark": "#000000"
+  },
+  "text": {
+    "primary": "#000000",
+    "secondary": "#6D6D72",
+    "light": "#FFFFFF",
+    "muted": "#8E8E93"
+  }
+}

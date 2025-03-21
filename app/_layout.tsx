@@ -6,44 +6,68 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme'; // Custom hook for theme management
+import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Prevent the splash screen from auto-hiding before assets are loaded
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // Detect the color scheme (dark/light)
   const colorScheme = useColorScheme();
 
-  // Load custom fonts
   const [fontsLoaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  // Hide the splash screen when fonts are loaded
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
 
-  // Return null until fonts are loaded
   if (!fontsLoaded) {
     return null;
   }
 
   return (
-    // Wrap the entire application in the theme provider for dynamic theming
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {/* Root Stack Navigation */}
       <Stack>
-        {/* Hide header globally for tabs */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* Handle Not Found Page */}
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen 
+          name="therapist-list" 
+          options={{ 
+            title: 'Find Therapist',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="book-appointment" 
+          options={{ 
+            title: 'Book Appointment',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="support-group" 
+          options={{ 
+            title: 'Support Group',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="experience" 
+          options={{ 
+            title: 'Your Journey',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="payment" 
+          options={{ 
+            title: 'Payment',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen name="+not-found" options={{ title: 'Oops!' }} />
       </Stack>
-
-      {/* Set Status Bar Appearance */}
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
     </ThemeProvider>
   );

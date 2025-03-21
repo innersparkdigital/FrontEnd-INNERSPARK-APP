@@ -1,101 +1,78 @@
-import { StyleSheet, View, TouchableOpacity, ScrollView, Alert, Animated } from 'react-native';
-import { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import colors from '@/constants/colors.json';
 
 export default function AccountScreen() {
-  const [selectedPlan, setSelectedPlan] = useState('Premium');
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  const subscriptionPlans = {
-    Basic: { price: '150,000 UGX', description: 'Virtual Counseling & Support Groups' },
-    Standard: { price: '400,000 UGX', description: 'Physical Counseling & Support Groups' },
-    Premium: { price: '600,000 UGX', description: 'All services + Priority Scheduling' },
-  };
-
-  const handleSubscriptionChange = (plan) => {
-    setSelectedPlan(plan);
-    Alert.alert('Subscription Updated', `You have selected the ${plan} plan for ${subscriptionPlans[plan].price}.`);
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      })
-    ]).start();
-  };
-
   return (
-    <ScrollView style={styles.container}>
-      {/* Header Section */}
-      <View style={styles.headerContainer}>
-        <IconSymbol
-          size={100}
-          color="#fff"
-          name="person-circle-outline"
-          style={styles.profileIcon}
-        />
-        <ThemedText style={styles.userName}>John Doe</ThemedText>
-        <ThemedText style={styles.userEmail}>johndoe@example.com</ThemedText>
-      </View>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <LinearGradient
+        colors={[colors.primary.brown, colors.primary.cream]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerContainer}
+      >
+        <View style={styles.profileSection}>
+          <View style={styles.profileImageContainer}>
+            <MaterialIcons name="person-circle" size={80} color="#fff" />
+          </View>
+          <View style={styles.profileInfo}>
+            <ThemedText style={styles.userName}>John Doe</ThemedText>
+            <ThemedText style={styles.userEmail}>johndoe@example.com</ThemedText>
+          </View>
+        </View>
+      </LinearGradient>
 
-      {/* Account Details Section */}
-      <ThemedView style={styles.detailsContainer}>
-        <ThemedText style={styles.sectionTitle}>Account Details</ThemedText>
-        <View style={styles.detailItem}>
-          <ThemedText style={styles.detailLabel}>Subscription Plan:</ThemedText>
-          <Animated.View style={{ opacity: fadeAnim }}>
-            <ThemedText style={styles.detailValue}>{selectedPlan}</ThemedText>
-          </Animated.View>
-        </View>
-        <View style={styles.detailItem}>
-          <ThemedText style={styles.detailLabel}>Membership Status:</ThemedText>
-          <ThemedText style={styles.detailValue}>Active</ThemedText>
-        </View>
-        <View style={styles.detailItem}>
-          <ThemedText style={styles.detailLabel}>Joined:</ThemedText>
-          <ThemedText style={styles.detailValue}>March 1, 2023</ThemedText>
-        </View>
-      </ThemedView>
+      <View style={styles.content}>
+        <Animated.View entering={FadeInDown.delay(200)} style={styles.statsContainer}>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>12</ThemedText>
+            <ThemedText style={styles.statLabel}>Sessions</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>4</ThemedText>
+            <ThemedText style={styles.statLabel}>Groups</ThemedText>
+          </View>
+          <View style={styles.statCard}>
+            <ThemedText style={styles.statNumber}>8</ThemedText>
+            <ThemedText style={styles.statLabel}>Resources</ThemedText>
+          </View>
+        </Animated.View>
 
-      {/* Subscription Plans */}
-      <ThemedView style={styles.detailsContainer}>
-        <ThemedText style={styles.sectionTitle}>Choose Subscription Plan</ThemedText>
-        {Object.keys(subscriptionPlans).map((plan) => (
-          <TouchableOpacity
-            key={plan}
-            style={[styles.planButton, selectedPlan === plan && styles.selectedPlan]}
-            onPress={() => handleSubscriptionChange(plan)}
-          >
-            <ThemedText style={styles.planText}>{plan} - {subscriptionPlans[plan].price}</ThemedText>
-            <ThemedText style={styles.planDescription}>{subscriptionPlans[plan].description}</ThemedText>
+        <Animated.View entering={FadeInDown.delay(400)} style={styles.quickActions}>
+          <TouchableOpacity style={styles.actionTile}>
+            <MaterialIcons name="edit" size={24} color={colors.primary.brown} />
+            <ThemedText style={styles.actionText}>Edit Profile</ThemedText>
           </TouchableOpacity>
-        ))}
-      </ThemedView>
+          <TouchableOpacity 
+            style={styles.actionTile}
+            onPress={() => router.push('/subscription-plans')}
+          >
+            <MaterialIcons name="card-membership" size={24} color={colors.primary.brown} />
+            <ThemedText style={styles.actionText}>Subscription</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionTile}>
+            <MaterialIcons name="notifications" size={24} color={colors.primary.brown} />
+            <ThemedText style={styles.actionText}>Notifications</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionTile}>
+            <MaterialIcons name="help" size={24} color={colors.primary.brown} />
+            <ThemedText style={styles.actionText}>Help</ThemedText>
+          </TouchableOpacity>
+        </Animated.View>
 
-      {/* Action Buttons */}
-      <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton}>
-          <ThemedText style={styles.actionButtonText}>Edit Profile</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <ThemedText style={styles.actionButtonText}>Change Password</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
-          <ThemedText style={styles.actionButtonText}>Manage Subscription</ThemedText>
-        </TouchableOpacity>
+        <Animated.View entering={FadeInDown.delay(1000)}>
+          <TouchableOpacity style={styles.logoutButton}>
+            <MaterialIcons name="logout" size={20} color="#fff" />
+            <ThemedText style={styles.logoutButtonText}>Log Out</ThemedText>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
-
-      {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton}>
-        <ThemedText style={styles.logoutButtonText}>Log Out</ThemedText>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -103,94 +80,106 @@ export default function AccountScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F6F9',
+    backgroundColor: colors.background.main,
   },
   headerContainer: {
-    backgroundColor: '#5A9',
-    alignItems: 'center',
-    paddingVertical: 50,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
-    marginBottom: 20,
   },
-  profileIcon: {
-    marginBottom: 15,
+  profileSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  profileImageContainer: {
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  profileInfo: {
+    marginLeft: 20,
   },
   userName: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#fff',
   },
   userEmail: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#E8F6F3',
-    marginTop: 5,
   },
-  detailsContainer: {
+  content: {
     padding: 20,
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    marginHorizontal: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    marginBottom: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    color: '#2C3E50',
-    textAlign: 'center',
-  },
-  detailItem: {
+  statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 10,
+    marginTop: -30,
+    marginBottom: 20,
   },
-  planButton: {
-    backgroundColor: '#EAEDED',
-    paddingVertical: 12,
-    borderRadius: 10,
+  statCard: {
+    flex: 1,
+    backgroundColor: '#fff',
+    margin: 5,
+    padding: 15,
+    borderRadius: 15,
     alignItems: 'center',
-    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  selectedPlan: {
-    backgroundColor: '#5A9',
-  },
-  planText: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  planDescription: {
-    fontSize: 14,
-    color: '#555',
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 10,
-  },
-  actionButton: {
-    backgroundColor: '#5A9',
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    borderRadius: 20,
-  },
-  actionButtonText: {
-    color: '#fff',
+  statNumber: {
+    fontSize: 24,
     fontWeight: 'bold',
+    color: colors.primary.brown,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: colors.text.secondary,
+    marginTop: 4,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: 30,
+  },
+  actionTile: {
+    width: '48%',
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  actionText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: colors.text.primary,
   },
   logoutButton: {
-    backgroundColor: '#C00',
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: '#DC3545',
+    flexDirection: 'row',
     alignItems: 'center',
-    margin: 40,
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 20,
+    marginBottom: 40,
   },
   logoutButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
 });

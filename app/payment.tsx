@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
+import { router, useLocalSearchParams } from 'expo-router';
 import colors from '@/constants/colors.json';
 
 const paymentMethods = [
@@ -12,9 +13,14 @@ const paymentMethods = [
   { id: 3, name: 'Bank Transfer', icon: 'account-balance' },
 ];
 
-const PaymentScreen = ({ route, navigation }) => {
+export default function PaymentScreen() {
+  const params = useLocalSearchParams();
+  const therapist = params.therapist ? JSON.parse(params.therapist as string) : null;
+  const appointmentDate = params.appointmentDate ? new Date(params.appointmentDate as string) : null;
+  const appointmentTime = params.appointmentTime as string;
+  
   const [selectedMethod, setSelectedMethod] = useState(null);
-  const [amount] = useState('100.00'); // This would come from the appointment details
+  const [amount] = useState('100.00');
   const [processing, setProcessing] = useState(false);
 
   const handlePayment = async () => {
@@ -27,9 +33,12 @@ const PaymentScreen = ({ route, navigation }) => {
     // Simulate payment processing
     setTimeout(() => {
       setProcessing(false);
-      navigation.navigate('ConfirmationScreen', {
-        message: 'Payment Successful!',
-        details: 'Your appointment has been confirmed.'
+      router.push({
+        pathname: '/(tabs)',
+        params: { 
+          message: 'Payment Successful!',
+          details: 'Your appointment has been confirmed.'
+        }
       });
     }, 2000);
   };
@@ -42,7 +51,7 @@ const PaymentScreen = ({ route, navigation }) => {
       >
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
         >
           <MaterialIcons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
@@ -57,7 +66,12 @@ const PaymentScreen = ({ route, navigation }) => {
         >
           <ThemedText style={styles.amountLabel}>Amount to Pay</ThemedText>
           <ThemedText style={styles.amount}>UGX {amount}</ThemedText>
-          <ThemedText style={styles.sessionInfo}>50 minutes therapy session</ThemedText>
+          <ThemedText style={styles.sessionInfo}>
+            {therapist?.name} - {appointmentTime}
+          </ThemedText>
+          <ThemedText style={styles.sessionInfo}>
+            {appointmentDate?.toLocaleDateString()}
+          </ThemedText>
         </Animated.View>
 
         {/* Payment Methods */}
@@ -132,7 +146,7 @@ const PaymentScreen = ({ route, navigation }) => {
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -280,5 +294,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-export default PaymentScreen;

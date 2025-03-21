@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './HomeScreen';
 import SupportGroupScreen from './SupportGroupScreen';
 import BookAppointmentScreen from './BookAppointmentsScreen';
 import ExperienceScreen from './ExperienceScreen';
@@ -13,8 +12,8 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Stack.Navigator initialRouteName="(tabs)">
+        <Stack.Screen name="(tabs)" component={require('./(tabs)/index.tsx').default} options={{ headerShown: false }} />
         <Stack.Screen name="SupportGroup" component={SupportGroupScreen} />
         <Stack.Screen name="BookAppointment" component={BookAppointmentScreen} />
         <Stack.Screen name="Experience" component={ExperienceScreen} />

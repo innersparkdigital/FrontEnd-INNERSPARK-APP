@@ -4,15 +4,18 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
+import { router } from 'expo-router';
 import colors from '@/constants/colors.json';
 
 const { width } = Dimensions.get('window');
 
-const ExperienceScreen = ({ navigation }) => {
+type Icon = keyof typeof MaterialIcons.glyphMap;
+
+export default function ExperienceScreen() {
   const journeyMilestones = [
-    { id: 1, title: 'First Session', date: 'March 15', icon: 'stars' },
-    { id: 2, title: 'Group Therapy', date: 'March 18', icon: 'groups' },
-    { id: 3, title: 'Weekly Goal', date: 'March 20', icon: 'emoji-events' },
+    { id: 1, title: 'First Session', date: 'March 15', icon: 'stars' as Icon },
+    { id: 2, title: 'Group Therapy', date: 'March 18', icon: 'groups' as Icon },
+    { id: 3, title: 'Weekly Goal', date: 'March 20', icon: 'emoji-events' as Icon },
   ];
 
   const moodHistory = [
@@ -26,9 +29,9 @@ const ExperienceScreen = ({ navigation }) => {
   ];
 
   const stats = [
-    { title: 'Sessions', value: '8', icon: 'video-camera-front' },
-    { title: 'Hours', value: '12', icon: 'schedule' },
-    { title: 'Goals Met', value: '5', icon: 'check-circle' },
+    { title: 'Sessions', value: '8', icon: 'video-camera-front' as Icon },
+    { title: 'Hours', value: '12', icon: 'schedule' as Icon },
+    { title: 'Goals Met', value: '5', icon: 'check-circle' as Icon },
   ];
 
   return (
@@ -39,7 +42,7 @@ const ExperienceScreen = ({ navigation }) => {
       >
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
         >
           <MaterialIcons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
@@ -123,7 +126,7 @@ const ExperienceScreen = ({ navigation }) => {
       </ScrollView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -151,20 +154,20 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: -40,
     marginBottom: 20,
   },
   statCard: {
+    flex: 1,
     backgroundColor: '#FFFFFF',
     borderRadius: 15,
     padding: 15,
+    marginHorizontal: 5,
     alignItems: 'center',
-    width: (width - 60) / 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    shadowRadius: 8,
+    elevation: 3,
   },
   statValue: {
     fontSize: 24,
@@ -177,7 +180,15 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   sectionContainer: {
-    marginBottom: 25,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
   },
   sectionTitle: {
     fontSize: 18,
@@ -188,23 +199,14 @@ const styles = StyleSheet.create({
   moodHistoryContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 15,
-    padding: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    paddingVertical: 10,
   },
   moodDay: {
     alignItems: 'center',
-    paddingVertical: 0,
   },
   moodEmoji: {
     fontSize: 24,
     marginBottom: 5,
-    paddingVertical: 20,
   },
   dayText: {
     fontSize: 12,
@@ -213,56 +215,46 @@ const styles = StyleSheet.create({
   milestoneCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: `${colors.primary.brown}10`,
     borderRadius: 15,
     padding: 15,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
   },
   milestoneIcon: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
-    backgroundColor: `${colors.primary.brown}15`,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: `${colors.primary.brown}20`,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
   },
   milestoneInfo: {
     flex: 1,
+    marginLeft: 15,
   },
   milestoneTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: colors.text.primary,
-    marginBottom: 4,
   },
   milestoneDate: {
     fontSize: 14,
     color: colors.text.secondary,
+    marginTop: 2,
   },
   progressContainer: {
-    marginBottom: 40,
+    marginBottom: 30,
   },
   progressCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 15,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    padding: 15,
   },
   progressHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   progressTitle: {
     fontSize: 16,
@@ -270,24 +262,24 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   progressValue: {
-    fontSize: 14,
-    color: colors.primary.brown,
+    fontSize: 16,
+    color: colors.services.blue,
     fontWeight: '600',
   },
   progressBar: {
     height: 8,
-    backgroundColor: `${colors.primary.brown}15`,
+    backgroundColor: `${colors.services.blue}20`,
     borderRadius: 4,
-    marginBottom: 15,
+    marginBottom: 10,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.primary.brown,
+    backgroundColor: colors.services.blue,
     borderRadius: 4,
   },
   progressText: {
     fontSize: 14,
     color: colors.text.secondary,
-    lineHeight: 20,
+    textAlign: 'center',
   },
 });

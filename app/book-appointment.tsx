@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
+import { router, useLocalSearchParams } from 'expo-router';
 import colors from '@/constants/colors.json';
 
 const { width } = Dimensions.get('window');
@@ -15,10 +16,11 @@ const timeSlots = [
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const BookAppointmentScreen = ({ route, navigation }) => {
-  const { therapist } = route.params;
+export default function BookAppointmentScreen() {
+  const params = useLocalSearchParams();
+  const therapist = params.therapist ? JSON.parse(params.therapist as string) : null;
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const generateDateButtons = () => {
     const dates = [];
@@ -36,10 +38,13 @@ const BookAppointmentScreen = ({ route, navigation }) => {
       alert('Please select a time slot');
       return;
     }
-    navigation.navigate('Payment', { 
-      therapist,
-      appointmentDate: selectedDate,
-      appointmentTime: selectedTime
+    router.push({
+      pathname: '/payment',
+      params: {
+        therapist: JSON.stringify(therapist),
+        appointmentDate: selectedDate.toISOString(),
+        appointmentTime: selectedTime
+      }
     });
   };
 
@@ -51,7 +56,7 @@ const BookAppointmentScreen = ({ route, navigation }) => {
       >
         <TouchableOpacity 
           style={styles.backButton}
-          onPress={() => navigation.goBack()}
+          onPress={() => router.back()}
         >
           <MaterialIcons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
@@ -68,8 +73,8 @@ const BookAppointmentScreen = ({ route, navigation }) => {
             <MaterialIcons name="person" size={32} color={colors.primary.brown} />
           </View>
           <View style={styles.therapistInfo}>
-            <ThemedText style={styles.therapistName}>{therapist.name}</ThemedText>
-            <ThemedText style={styles.therapistSpecialty}>{therapist.specialty}</ThemedText>
+            <ThemedText style={styles.therapistName}>{therapist?.name || 'Select Therapist'}</ThemedText>
+            <ThemedText style={styles.therapistSpecialty}>{therapist?.specialty || 'Click to browse therapists'}</ThemedText>
           </View>
         </Animated.View>
 
@@ -159,13 +164,16 @@ const BookAppointmentScreen = ({ route, navigation }) => {
 
       {/* Bottom Button */}
       <View style={styles.bottomContainer}>
-        <TouchableOpacity style={styles.bookButton} onPress={handleBooking}>
+        <TouchableOpacity 
+          style={styles.bookButton} 
+          onPress={handleBooking}
+        >
           <ThemedText style={styles.bookButtonText}>Proceed to Payment</ThemedText>
         </TouchableOpacity>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -185,6 +193,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    paddingTop: 10,
   },
   content: {
     flex: 1,
@@ -236,6 +245,7 @@ const styles = StyleSheet.create({
   dateScroller: {
     flexDirection: 'row',
     marginBottom: 10,
+    paddingVertical: 10,
   },
   dateButton: {
     width: 65,

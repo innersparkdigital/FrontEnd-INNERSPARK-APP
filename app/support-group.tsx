@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, TouchableOpacity, StyleSheet, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInRight } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/ThemedText';
+import { router } from 'expo-router';
 import colors from '@/constants/colors.json';
+import { configurePushNotifications, scheduleGroupSessionNotification, sendImmediateNotification } from '@/utils/notifications';
 
 const mockMessages = [
   { id: 1, user: 'Sarah', message: 'Hi everyone! How are you all doing today?', time: '10:30 AM' },
@@ -12,13 +14,58 @@ const mockMessages = [
   { id: 3, user: 'Emily', message: 'Happy to be here with this supportive group', time: '10:35 AM' }
 ];
 
-const SupportGroupScreen = ({ navigation }) => {
+export default function SupportGroupScreen() {
   const [message, setMessage] = useState('');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
-  const sendMessage = () => {
+  useEffect(() => {
+    setupNotifications();
+  }, []);
+
+  const setupNotifications = async () => {
+    const enabled = await configurePushNotifications();
+    setNotificationsEnabled(enabled);
+    if (!enabled) {
+      Alert.alert(
+        'Notifications Disabled',
+        'Please enable notifications to receive updates about group sessions.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const joinGroup = async () => {
+    // Schedule notification for next session (example date)
+    const nextSession = new Date();
+    nextSession.setHours(nextSession.getHours() + 24); // Next session in 24 hours
+
+    if (notificationsEnabled) {
+      await scheduleGroupSessionNotification(
+        'Anxiety Support Group',
+        nextSession,
+        'https://meeting-url.com'
+      );
+      
+      // Send immediate welcome notification
+      await sendImmediateNotification(
+        'Welcome to Anxiety Support Group!',
+        'You\'ll receive notifications about upcoming sessions and group updates.'
+      );
+    }
+  };
+
+  const sendMessage = async () => {
     if (message.trim()) {
       // Here you would typically send the message to your backend
       setMessage('');
+      
+      // Notify other group members (in a real app, this would be handled by the backend)
+      if (notificationsEnabled) {
+        await sendImmediateNotification(
+          'New message in Anxiety Support Group',
+          'Someone just shared their thoughts in the group'
+        );
+      }
     }
   };
 
@@ -31,7 +78,7 @@ const SupportGroupScreen = ({ navigation }) => {
         <View style={styles.headerTop}>
           <TouchableOpacity 
             style={styles.backButton}
-            onPress={() => navigation.goBack()}
+            onPress={() => router.back()}
           >
             <MaterialIcons name="arrow-back" size={24} color="#FFFFFF" />
           </TouchableOpacity>
@@ -49,6 +96,12 @@ const SupportGroupScreen = ({ navigation }) => {
             ))}
           </View>
           <ThemedText style={styles.participantsText}>12 participants</ThemedText>
+          <TouchableOpacity 
+            style={styles.joinButton}
+            onPress={joinGroup}
+          >
+            <ThemedText style={styles.joinButtonText}>Join Group</ThemedText>
+          </TouchableOpacity>
         </View>
       </LinearGradient>
 
@@ -95,7 +148,7 @@ const SupportGroupScreen = ({ navigation }) => {
       </KeyboardAvoidingView>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -118,9 +171,11 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
   },
   infoButton: {
     padding: 5,
@@ -131,7 +186,7 @@ const styles = StyleSheet.create({
   },
   participantsAvatars: {
     flexDirection: 'row',
-    marginRight: 10,
+    alignItems: 'center',
   },
   avatar: {
     width: 32,
@@ -141,11 +196,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.primary.brown,
+    borderColor: colors.primary.cream,
   },
   participantsText: {
     color: '#FFFFFF',
-    opacity: 0.9,
+    marginLeft: 15,
+    fontSize: 14,
+  },
+  joinButton: {
+    backgroundColor: colors.services.green,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginLeft: 'auto',
+  },
+  joinButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   content: {
     flex: 1,
@@ -155,32 +223,34 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   messageContainer: {
-    marginBottom: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 15,
+    padding: 15,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   messageHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
+    justifyContent: 'space-between',
+    marginBottom: 8,
   },
   userName: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     color: colors.text.primary,
-    marginRight: 8,
   },
   messageTime: {
     fontSize: 12,
     color: colors.text.secondary,
   },
   messageContent: {
-    backgroundColor: '#FFFFFF',
-    padding: 15,
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: `${colors.primary.brown}10`,
+    borderRadius: 12,
+    padding: 12,
   },
   messageText: {
     fontSize: 14,
@@ -193,32 +263,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
+    borderTopWidth: 1,
+    borderTopColor: `${colors.primary.brown}20`,
   },
   input: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: `${colors.primary.brown}10`,
     borderRadius: 20,
     paddingHorizontal: 15,
     paddingVertical: 10,
     marginRight: 10,
     fontSize: 14,
+    color: colors.text.primary,
     maxHeight: 100,
   },
   sendButton: {
-    width: 45,
-    height: 45,
-    borderRadius: 22.5,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: colors.primary.brown,
     justifyContent: 'center',
     alignItems: 'center',
   },
 });
-
-export default SupportGroupScreen;
