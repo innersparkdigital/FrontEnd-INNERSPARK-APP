@@ -66,6 +66,41 @@ export default function RootLayout() {
             headerShown: false 
           }} 
         />
+        <Stack.Screen 
+          name="payment-methods" 
+          options={{ 
+            title: 'Payment Methods',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="add-payment-method" 
+          options={{ 
+            title: 'Add Payment Method',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="edit-profile" 
+          options={{ 
+            title: 'Edit Profile',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="privacy-policy" 
+          options={{ 
+            title: 'Privacy Policy',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="weekly-goals" 
+          options={{ 
+            title: 'Weekly Goals',
+            headerShown: false 
+          }} 
+        />
         <Stack.Screen name="+not-found" options={{ title: 'Oops!' }} />
       </Stack>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />

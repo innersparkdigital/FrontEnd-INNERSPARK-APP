@@ -11,6 +11,22 @@ const { width } = Dimensions.get('window');
 
 type Icon = keyof typeof MaterialIcons.glyphMap;
 
+const JourneySection = () => (
+  <TouchableOpacity
+    style={styles.journeyCard}
+    onPress={() => router.push('/weekly-goals')}
+  >
+    <MaterialIcons name="flag" size={24} color={colors.primary.brown} />
+    <View style={styles.journeyContent}>
+      <ThemedText style={styles.journeyTitle}>Weekly Goals</ThemedText>
+      <ThemedText style={styles.journeySubtitle}>
+        Set and track your weekly mental health goals
+      </ThemedText>
+    </View>
+    <MaterialIcons name="chevron-right" size={24} color={colors.text.secondary} />
+  </TouchableOpacity>
+);
+
 export default function ExperienceScreen() {
   const journeyMilestones = [
     { id: 1, title: 'First Session', date: 'March 15', icon: 'stars' as Icon },
@@ -123,6 +139,9 @@ export default function ExperienceScreen() {
             </ThemedText>
           </View>
         </Animated.View>
+
+        {/* Journey Section */}
+        <JourneySection />
       </ScrollView>
     </View>
   );
@@ -282,4 +301,31 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     textAlign: 'center',
   },
+  journeyCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  journeyContent: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  journeyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text.primary,
+    marginBottom: 4,
+  },
+  journeySubtitle: {
+    fontSize: 14,
+    color: colors.text.secondary,
+  }
 });
